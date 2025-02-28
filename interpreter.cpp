@@ -91,18 +91,19 @@ private:
     bool terminal_configured = false;
     bool debug_mode;
 
-    bool loadFile(const std::string& filename) {
-        std::ifstream file(filename, std::ios::binary);
-        if (!file) return false;
-        std::string raw_code((std::istreambuf_iterator<char>(file)), filtered;
-        for (char c : raw_code) {
-            if (std::string("><+-.,[]").find(c) != std::string::npos) {
-                filtered += c;
-            }
+bool loadFile(const std::string& filename) {
+    std::ifstream file(filename, std::ios::binary);
+    if (!file) return false;
+    std::string raw_code((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    std::string filtered;
+    for (char c : raw_code) {
+        if (std::string("><+-.,[]").find(c) != std::string::npos) {
+            filtered += c;
         }
-        code = std::move(filtered);
-        return true;
     }
+    code = std::move(filtered);
+    return true;
+}
 
     void preprocessJumps() {
         std::stack<size_t> stack;
