@@ -191,13 +191,8 @@ Feel free to report any issues or suggestions via the repository's [Issue Tracke
 
 This project is open-source and available under the **GNU General Public License v3.0**. See the `LICENSE` file for more information.
 
----
+___
 
 With this enhanced Brainfuck interpreter, you can unleash the full potential of the Brainfuck programming language. Whether you're an enthusiast, a student, or a developer exploring esolang execution, this tool empowers you to debug, analyze, and execute Brainfuck programs with precision and ease.
 
 Enjoy exploring the intricate world of Brainfuck!
-
----
-
-What do you think about this version? It should cover all the necessary details thoroughly while remaining professional and user-friendly! Let me know if you'd like further refinements. 🚀
-```[43dcd9a7-70db-4a1f-b0ae-981daa162054](https://github.com/krautchan/gbt/tree/55976e576f87525efbcbde49f08fab3ce89da66a/module%2Fapi%2Fbrainfuck%2Fbrainfuck_test.go?citationMarker=43dcd9a7-70db-4a1f-b0ae-981daa162054 "1")[43dcd9a7-70db-4a1f-b0ae-981daa162054](https://github.com/infywychengg04/freecodecamp/tree/386aaef74e9d652f16c79075c1c87123cebd6f7b/curriculum%2Fchallenges%2Fchinese%2F10-coding-interview-prep%2Frosetta-code%2Fexecute-brain.md?citationMarker=43dcd9a7-70db-4a1f-b0ae-981daa162054 "2")
