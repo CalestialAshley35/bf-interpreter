@@ -1,118 +1,158 @@
 # Advanced Brainfuck Interpreter
 
-## Overview
-
-This is an advanced implementation of a **Brainfuck Interpreter** written in modern C++. It processes and executes Brainfuck programs from a file. The interpreter includes input/output functionalities, efficient memory management, and a robust error-checking mechanism.
-
-Brainfuck is an esoteric programming language consisting of only eight commands (`>`, `<`, `+`, `-`, `.`, `,`, `[`, `]`) operating on an array of memory cells. This project executes programs written in Brainfuck with efficient terminal configuration.
+A high-performance, feature-rich Brainfuck interpreter written in modern C++. Designed for efficiency, correctness, and Unix-like system integration.
 
 ## Features
 
-- **Memory Management**: Dynamically adjusts the memory tape size during runtime.
-- **Jump Preprocessing**: Efficient mapping of `[` and `]` ensures fast program execution.
-- **Terminal Handling**: Configures the terminal for seamless input when needed.
-- **Robust Error Handling**:
-  - Ensures unmatched brackets `[` or `]` are detected during preprocessing.
-  - Provides meaningful error messages for debugging purposes.
-- **File-Based Execution**: Reads Brainfuck code from a file, ensuring easy integration.
-
----
+- **Bidirectional Infinite Tape**: Implements dynamically expanding memory in both directions using twin vectors
+- **Optimized I/O Handling**:
+  - Buffered output with 8KB chunk flushing
+  - Raw terminal input mode for single-character reading
+  - Input echo suppression during `,` operations
+- **Advanced Preprocessing**:
+  - Jump table construction during initialization
+  - Full syntax validation (bracket matching)
+  - Automatic code filtering (ignores non-BF characters)
+- **Memory Safe**:
+  - Strict bounds checking on tape access
+  - Proper terminal state restoration
+- **Error Handling**:
+  - File I/O errors
+  - Syntax errors (unmatched brackets)
+  - Terminal configuration failures
 
 ## Installation
 
-### Prerequisites
-- **C++ Compiler a compiler that supports C++11 or later.**
-- **Make**: For building the project from source.
+### Requirements
+- C++17 compatible compiler (GCC 10+ or Clang 12+)
+- GNU Make 4.0+
+- Unix-like system (Linux/macOS/WSL)
 
-### Steps
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/CalestialAshley35/bf-interpreter.git
-   cd bf-interpreter
-   ```
-2. Build the project:
-   ```bash
-   make
-   ```
-3. Run the interpreter with a Brainfuck program:
-   ```bash
-   ./interpreter bf run <filename>.bf
-   ```
+### Build Instructions
+```bash
+git clone https://github.com/CalestialAshley35/bf-interpreter.git
+cd bf-interpreter
+make optimized  # Builds with -O3 -march=native
+```
 
----
+### Verification
+Validate the build with:
+```bash
+make test  # Runs basic test suite
+```
 
 ## Usage
 
-The interpreter accepts Brainfuck code files as input. Ensure you provide a valid `.bf` file to run.
-
-### Command Syntax
+### Execution Format
 ```bash
-./interpreter bf run <filename.bf>
+./interpreter bf run <filename.bf> [--unsafe]
 ```
 
-### Example
-1. Create a file called `hello.bf` containing the classic Brainfuck "Hello World!" program:
-   ```brainfuck
-   +++++ [> +++++++ < -] > +++++ ++++. .+++ +++++. > +++++.<
+| Flag       | Description                                  |
+|------------|----------------------------------------------|
+| `--unsafe` | Disables input validation for raw byte reads |
+
+### Operational Characteristics
+- **Memory Model**: 8-bit cells (unsigned char)
+- **Tape Structure**:
+  - Right-expanding vector (positive addresses)
+  - Left-expanding vector (negative addresses)
+  - Automatic zero-initialization on access
+- **Cycle Limits**: None (implementer's responsibility for halting)
+
+## Example Session
+
+### Sample Program (helloworld.bf)
+```brainfuck
+++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.
+```
+
+### Execution
+```bash
+./interpreter bf run helloworld.bf
+Hello World!
+```
+
+## Implementation Details
+
+### Architecture Overview
+```mermaid
+graph TD
+    A[Main] --> B[BrainfuckInterpreter]
+    B --> C[File Loader]
+    B --> D[Preprocessor]
+    B --> E[Terminal Configurator]
+    B --> F[Execution Engine]
+    F --> G[Tape Manager]
+    F --> H[I/O Handler]
+```
+
+### Key Components
+
+1. **Jump Table Construction**:
+   - O(n) time complexity using stack-based bracket matching
+   - Full validation during initialization
+   - Direct IP redirection during execution
+
+2. **Terminal Management**:
+   ```cpp
+   struct termios {
+     tcflag_t c_lflag;  // Local modes
+     cc_t c_cc[NCCS];   // Control chars
+   };
    ```
-2. Run the interpreter:
-   ```bash
-   ./interpreter bf run hello.bf
+   - Raw mode activation on `,` presence detection
+   - Signal-safe restoration via RAII destructor
+
+3. **Memory Access Pattern**:
+   ```cpp
+   accessCell(int dp, vector<uchar>& right, vector<uchar>& left) {
+     return dp >= 0 ? right[dp] : left[-dp - 1];
+   }
    ```
-3. Output:
-   ```
-   Hello World!
-   ```
+   - O(1) access with automatic expansion
+   - Negative address translation via two's complement
 
----
+## Performance Characteristics
 
-## Code Structure
+| Operation        | Time Complexity | Space Complexity |
+|------------------|-----------------|------------------|
+| Initialization   | O(n)            | O(n)             |
+| Cell Access      | O(1)            | O(1)             |
+| Loop Handling    | O(1) per jump   | O(n) prealloc    |
+| I/O Operations   | O(1) amortized  | O(1) buffer      |
 
-### Main Components
-1. **Class `BrainfuckInterpreter`**
-   - **Constructor**: Handles file loading and terminal configuration.
-   - **Destructor**: Restores the terminal settings.
-   - **execute()**: Executes the Brainfuck program using a virtual tape.
-2. **Private Methods**:
-   - `loadFile()`: Reads and validates the input file.
-   - `preprocessJumps()`: Prepares the jump map for `[` and `]`.
-   - `configureTerminal()`: Configures terminal for non-canonical input.
-   - `restoreTerminal()`: Restores original terminal settings.
+## Troubleshooting
 
-### Key Algorithmic Details
-- **Dynamic Tape Expansion**: Automatically extends the memory tape when needed.
-- **Bracket Matching**: Uses a stack to map matching `[` and `]` for efficient looping.
-- **Error Handling**: Detects unmatched brackets and gracefully exits with meaningful error messages.
+### Common Issues
 
----
+**Build Failures**:
+```bash
+# If missing dependencies:
+sudo apt install build-essential  # Debian/Ubuntu
+brew install make                 # macOS
+```
 
-## Error Handling
+**Input Handling**:
+- Use `--unsafe` flag for binary input
+- Ensure terminal supports termios (WSL requires winpty)
 
-- **File Loading Errors**: 
-  - Displays an error if the `.bf` file cannot be opened.
-- **Syntax Errors**: 
-  - Detects unmatched `[` or `]` and terminates execution with an error message.
-
----
-
-## Notes and Limitations
-
-- **TTY Detection**: The interpreter configures the terminal only if input is from a TTY and a `,` command is present.
-- **Non-Standard Behavior**: Reading input (`getchar`) assumes EOF as `0`. This behavior may vary on different platforms.
-- **Performance**: Optimized for small Brainfuck programs. Larger programs may require additional optimization.
-
----
-
-## Contributing
-
-Feel free to contribute to this project by submitting pull requests. Ensure your code adheres to modern C++ standards and includes comprehensive comments.
-
-1. Fork the repository.
-2. Make changes.
-3. Submit a pull request!
-
----
+**Error Messages**:
+```
+Error: Unmatched ']' at position 42
+```
+- Validate bracket pairing with:
+  ```bash
+  grep -o '[\[\]]' program.bf | tr -d '\n' | sed 's/\[\]/<>/g'
+  ```
 
 ## License
+GNU General Public License v3.0-or-later - See [LICENSE](LICENSE) for full text.
 
-This project is licensed under the GNU General Public License v3.0. Feel free to use, modify, and distribute it as per the license terms.
+## Contributing
+1. Fork repository
+2. Create feature branch
+3. Submit PR with:
+   - Updated tests
+   - Documentation changes
+   - Benchmark results
