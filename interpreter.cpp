@@ -2,12 +2,9 @@
 #include <fstream>
 #include <vector>
 #include <stack>
-#include <unordered_map>
 #include <string>
-#include <algorithm>
 #include <termios.h>
 #include <unistd.h>
-#include <limits>
 
 class BrainfuckInterpreter {
 public:
@@ -17,43 +14,59 @@ public:
             exit(1);
         }
         preprocessJumps();
-        is_stdin_tty = isatty(STDIN_FILENO);
         configureTerminal();
     }
 
     ~BrainfuckInterpreter() {
         restoreTerminal();
+        std::cout.write(output_buffer.data(), output_buffer.size());
+        std::cout.flush();
     }
 
     void execute() {
-        std::vector<unsigned char> tape(1, 0);
-        size_t dp = 0, ip = 0;
+        int dp = 0;
+        size_t ip = 0;
+        std::vector<unsigned char> right_tape{0};
+        std::vector<unsigned char> left_tape;
 
         while (ip < code.size()) {
             switch (code[ip]) {
                 case '>':
-                    if (++dp == tape.size()) tape.push_back(0);
+                    if (++dp >= 0) {
+                        if (dp >= static_cast<int>(right_tape.size())) {
+                            right_tape.push_back(0);
+                        }
+                    }
                     break;
                 case '<':
-                    if (dp > 0) --dp;
+                    if (--dp < 0) {
+                        const size_t index = -dp - 1;
+                        if (index >= left_tape.size()) {
+                            left_tape.push_back(0);
+                        }
+                    }
                     break;
                 case '+':
-                    ++tape[dp];
+                    accessCell(dp, right_tape, left_tape)++;
                     break;
                 case '-':
-                    --tape[dp];
+                    accessCell(dp, right_tape, left_tape)--;
                     break;
                 case '.':
-                    std::cout.put(tape[dp]).flush();
+                    output_buffer += accessCell(dp, right_tape, left_tape);
+                    if (output_buffer.size() >= 8192) {
+                        std::cout.write(output_buffer.data(), output_buffer.size());
+                        output_buffer.clear();
+                    }
                     break;
                 case ',':
-                    tape[dp] = readInput();
+                    accessCell(dp, right_tape, left_tape) = readInput();
                     break;
                 case '[':
-                    if (tape[dp] == 0) ip = jump_map[ip];
+                    if (!accessCell(dp, right_tape, left_tape)) ip = jump_map[ip];
                     break;
                 case ']':
-                    if (tape[dp] != 0) ip = jump_map[ip];
+                    if (accessCell(dp, right_tape, left_tape)) ip = jump_map[ip];
                     break;
             }
             ++ip;
@@ -62,26 +75,27 @@ public:
 
 private:
     std::string code;
-    std::unordered_map<size_t, size_t> jump_map;
-    bool is_stdin_tty;
+    std::vector<size_t> jump_map;
     struct termios original_termios;
+    std::string output_buffer;
     bool terminal_configured = false;
 
     bool loadFile(const std::string& filename) {
         std::ifstream file(filename, std::ios::binary);
         if (!file) return false;
-        std::string raw_code((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-        for (char c : raw_code) {
-            if (std::string("><+-.,[]").find(c) != std::string::npos) code += c;
-        }
+        std::string raw_code((std::istreambuf_iterator<char>(file)), filtered;
+        for (char c : raw_code) if (std::string("><+-.,[]").find(c) != std::string::npos) filtered += c;
+        code = std::move(filtered);
         return true;
     }
 
     void preprocessJumps() {
         std::stack<size_t> stack;
+        jump_map.resize(code.size());
         for (size_t i = 0; i < code.size(); ++i) {
-            if (code[i] == '[') stack.push(i);
-            else if (code[i] == ']') {
+            if (code[i] == '[') {
+                stack.push(i);
+            } else if (code[i] == ']') {
                 if (stack.empty()) {
                     std::cerr << "Error: Unmatched ']' at position " << i << std::endl;
                     exit(1);
@@ -98,8 +112,12 @@ private:
         }
     }
 
+    unsigned char& accessCell(int dp, std::vector<unsigned char>& right, std::vector<unsigned char>& left) {
+        return dp >= 0 ? right[dp] : left[-dp - 1];
+    }
+
     void configureTerminal() {
-        if (!is_stdin_tty || code.find(',') == std::string::npos) return;
+        if (!isatty(STDIN_FILENO) || code.find(',') == std::string::npos) return;
         if (tcgetattr(STDIN_FILENO, &original_termios) == -1) return;
         struct termios new_termios = original_termios;
         new_termios.c_lflag &= ~(ICANON | ECHO);
@@ -114,13 +132,13 @@ private:
 
     unsigned char readInput() {
         int input = getchar();
-        return (input == EOF) ? 0 : static_cast<unsigned char>(input);
+        return static_cast<unsigned char>(input != EOF ? input : 0);
     }
 };
 
 int main(int argc, char* argv[]) {
     if (argc != 4 || std::string(argv[1]) != "bf" || std::string(argv[2]) != "run") {
-        std::cerr << "Usage: " << argv[0] << " bf run <filename.bf>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " bf run <filename.bf>\n";
         return 1;
     }
     BrainfuckInterpreter interpreter(argv[3]);
