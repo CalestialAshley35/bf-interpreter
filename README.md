@@ -21,7 +21,7 @@ Brainfuck is an esoteric programming language consisting of only eight commands 
 ## Installation
 
 ### Prerequisites
-- **C++ Compiler a compiler that supports C++11 or later.
+- **C++ Compiler a compiler that supports C++11 or later.**
 - **Make**: For building the project from source.
 
 ### Steps
