@@ -6,13 +6,18 @@
 #include <termios.h>
 #include <unistd.h>
 #include <algorithm>
+#include <chrono>
+#include <sstream>
 
 class BrainfuckInterpreter {
 public:
-    BrainfuckInterpreter(const std::string& filename, bool debug) : debug_mode(debug) {
+    BrainfuckInterpreter(const std::string& filename, bool debug, bool optimize) : debug_mode(debug), optimize_code(optimize) {
         if (!loadFile(filename)) {
             std::cerr << "Error: Could not open file " << filename << std::endl;
             exit(1);
+        }
+        if (optimize_code) {
+            optimizeBrainfuckCode();
         }
         preprocessJumps();
         configureTerminal();
@@ -25,6 +30,7 @@ public:
     }
 
     void execute() {
+        auto start = std::chrono::high_resolution_clock::now();
         int dp = 0;
         size_t ip = 0;
         std::vector<unsigned char> right_tape{0};
@@ -81,6 +87,34 @@ public:
             }
             ++ip;
         }
+        
+        if (benchmark_mode) {
+            auto end = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double> duration = end - start;
+            std::cout << "Execution Time: " << duration.count() << " seconds\n";
+        }
+    }
+
+    void benchmark() {
+        benchmark_mode = true;
+        execute();
+    }
+
+    void formatCode() {
+        std::string formatted_code;
+        int indentation = 0;
+        for (char c : code) {
+            if (c == '[') {
+                formatted_code += '\n' + std::string(indentation, ' ') + c;
+                indentation += 2;
+            } else if (c == ']') {
+                indentation -= 2;
+                formatted_code += '\n' + std::string(indentation, ' ') + c;
+            } else {
+                formatted_code += c;
+            }
+        }
+        std::cout << formatted_code << std::endl;
     }
 
 private:
@@ -90,20 +124,22 @@ private:
     std::string output_buffer;
     bool terminal_configured = false;
     bool debug_mode;
+    bool optimize_code;
+    bool benchmark_mode = false;
 
-bool loadFile(const std::string& filename) {
-    std::ifstream file(filename, std::ios::binary);
-    if (!file) return false;
-    std::string raw_code((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-    std::string filtered;
-    for (char c : raw_code) {
-        if (std::string("><+-.,[]").find(c) != std::string::npos) {
-            filtered += c;
+    bool loadFile(const std::string& filename) {
+        std::ifstream file(filename, std::ios::binary);
+        if (!file) return false;
+        std::string raw_code((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+        std::string filtered;
+        for (char c : raw_code) {
+            if (std::string("><+-.,[]").find(c) != std::string::npos) {
+                filtered += c;
+            }
         }
+        code = std::move(filtered);
+        return true;
     }
-    code = std::move(filtered);
-    return true;
-}
 
     void preprocessJumps() {
         std::stack<size_t> stack;
@@ -152,7 +188,6 @@ bool loadFile(const std::string& filename) {
     }
 
     void debugStep(size_t current_ip, char current_instr, size_t new_ip, int dp, const std::vector<unsigned char>& left_tape, const std::vector<unsigned char>& right_tape) {
-        if (terminal_configured) tcsetattr(STDIN_FILENO, TCSANOW, &original_termios);
         std::cout << "Debug: Executed '" << current_instr << "' at position " << current_ip << "\n";
         std::cout << "Next IP: " << new_ip << " (next instruction after increment: " << (new_ip + 1) << ")\n";
         std::cout << "Data pointer: " << dp << "\n";
@@ -180,13 +215,6 @@ bool loadFile(const std::string& filename) {
             case 'q': exit(0);
             default: std::cout << "Unknown command. Defaulting to step.\n"; break;
         }
-        if (terminal_configured) {
-            struct termios new_termios = original_termios;
-            new_termios.c_lflag &= ~(ICANON | ECHO);
-            new_termios.c_cc[VMIN] = 1;
-            new_termios.c_cc[VTIME] = 0;
-            tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
-        }
     }
 
     void printCells(int dp, const std::vector<unsigned char>& left_tape, const std::vector<unsigned char>& right_tape) {
@@ -212,15 +240,31 @@ bool loadFile(const std::string& filename) {
         }
         std::cout << "\n";
     }
+
+    void optimizeBrainfuckCode() {
+        // Placeholder for optimization logic (simplifying sequences like +++++--> to a single step)
+        // Real optimizations will go here, e.g., loop unrolling, simplifying redundant operations
+    }
 };
 
 int main(int argc, char* argv[]) {
-    if (argc != 4 || std::string(argv[1]) != "bf" || (std::string(argv[2]) != "run" && std::string(argv[2]) != "debug")) {
-        std::cerr << "Usage: " << argv[0] << " bf run|debug <filename.bf>\n";
+    if (argc < 3 || std::string(argv[1]) != "bf") {
+        std::cerr << "Usage: " << argv[0] << " bf run|debug|benchmark|format <filename.bf> [-03]\n";
         return 1;
     }
     bool debug_mode = (std::string(argv[2]) == "debug");
-    BrainfuckInterpreter interpreter(argv[3], debug_mode);
-    interpreter.execute();
+    bool optimize = (argc > 3 && std::string(argv[3]) == "-03");
+    std::string command = argv[2];
+
+    BrainfuckInterpreter interpreter(argv[3], debug_mode, optimize);
+    
+    if (command == "run") {
+        interpreter.execute();
+    } else if (command == "benchmark") {
+        interpreter.benchmark();
+    } else if (command == "format") {
+        interpreter.formatCode();
+    }
+
     return 0;
 }
