@@ -26,7 +26,7 @@ This guide provides detailed instructions for using the Brainfuck interpreter/de
 1. Save code as `bf_interpreter.cpp`
 2. Compile with:
 ```bash
-g++ -O3 -o bfint bf_interpreter.cpp
+g++ -O3 -o bfint interpreter.cpp
 ```
 
 ## Basic Usage
