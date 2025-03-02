@@ -18,14 +18,19 @@ Welcome to the **Brainfuck Interpreter**! This interpreter allows you to run, de
 - **Benchmark Mode:** Measure the execution time of Brainfuck programs.
 - **Code Formatting:** Format Brainfuck code for better readability.
 
-## Installation
+## Installation Instructions
 
-To install the Brainfuck Interpreter, use the following commands:
+To install the Brainfuck Interpreter, please follow the commands below:
 
+### **Linux/MacOS:**
 ```bash
 wget https://github.com/CalestialAshley35/bf-interpreter/raw/main/interpreter.cpp
 g++ interpreter.cpp -o interpreter
-```.
+```
+
+### **Windows:**
+1. Download the file from [Interpreter for Windows](https://github.com/CalestialAshley35/bf-interpreter/blob/main/windows.cpp).
+2. Run it using MinGW or Visual Studio C++.
 
 ### Run Mode
 
