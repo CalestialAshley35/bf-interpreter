@@ -139,5 +139,3 @@ The latest version of the Brainfuck Interpreter is **v2.5.4**, which includes th
 ## Contribution
 
 Feel free to fork this project, submit issues, or create pull requests. Contributions are always welcome! 
-
-I hope this update meets your needs! If you have any more suggestions or requests, feel free to let me know.
