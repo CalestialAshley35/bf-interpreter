@@ -1,6 +1,6 @@
 # Brainfuck Interpreter for Linux
 
-Welcome to the **Brainfuck Interpreter**! This interpreter allows you to run, debug, and benchmark Brainfuck programs on Linux. It comes with performance optimizations and code formatting features.
+Welcome to the **Brainfuck Interpreter**! This interpreter allows you to run, debug, and benchmark and format Brainfuck programs on Linux. It comes with performance optimizations and code formatting features.
 
 ## Features
 
@@ -29,7 +29,7 @@ g++ interpreter.cpp -o interpreter
 ```
 
 ### **Windows:**
-1. Download the file from [Interpreter for Windows](https://github.com/CalestialAshley35/bf-interpreter/blob/main/windows.cpp).
+1. Download the Windows-Specific File from [Interpreter for Windows](https://github.com/CalestialAshley35/bf-interpreter/blob/main/windows.cpp).
 2. Run it using MinGW or Visual Studio C++.
 
 ### Run Mode
@@ -41,7 +41,7 @@ To execute a Brainfuck program, use the `run` command followed by the filename:
 ```
 
 ### Code Optimization 
-To execute a Brainfuck Program with fast execution, use the -03 flag by following command:
+To execute a Brainfuck Program with fast execution, use the `-03` flag by following command:
 ```bash
 ./interpreter bf run <filename>.bf -03
 ```
@@ -70,6 +70,12 @@ To format a Brainfuck program for better readability, use the `format` command:
 ./interpreter bf format <filename.bf>
 ```
 
+## Warning Mode
+
+To get warning for a Brainfuck Program, use `warning` command:
+
+```bash
+./interpreter bf warning <filename>.bf
 ## Example
 
 Here is an example of how to use the Brainfuck Interpreter:
@@ -95,15 +101,17 @@ g++ interpreter.cpp -o interpreter
 
 # Format a Brainfuck program
 ./interpreter bf format example.bf
+
+# Warning for a Brainfuck program
+./interpreter bf warning hello.bf
 ```
 
 ## Latest Version
 
-The latest version of the Brainfuck Interpreter is **v2.3.0**, which includes the following updates:
+The latest version of the Brainfuck Interpreter is **v2.5.4**, which includes the following updates:
 
-- Added benchmark mode
-- Added performance optimization (-03)
-- Added code formatting feature
+- Added More Performance Metrics to `benchmark` command
+- Added `warning` command
 
 ## Contribution
 
