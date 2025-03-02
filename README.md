@@ -93,7 +93,7 @@ g++ interpreter.cpp -o interpreter
 ./interpreter bf run example.bf
 
 # Run a Brainfuck program with fast optimization 
-./interpreter bf run example.sh -03
+./interpreter bf run example.bf -03
 
 # Debug a Brainfuck program
 ./interpreter bf debug example.bf
