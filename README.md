@@ -51,6 +51,29 @@ Type "help", "creator", "exit", "install" or "license" for more information.
 >>> 
 ```
 
+Certainly! Here’s a more polished and professional version of your text:
+
+## Brainfuck Shell
+
+Introducing a powerful shell that supports typing Brainfuck code within a REPL environment. To install, follow these steps:
+1. Download the shell script:
+    ```bash
+    wget https://github.com/CalestialAshley35/bf-interpreter/raw/main/shell.cpp
+    ```
+2. Compile the script using g++:
+    ```bash
+    g++ shell.cpp -o shell
+    ```
+3. Run the shell:
+    ```bash
+    ./shell
+    ```
+
+Upon execution, you will see the following prompt:
+```bash
+Enter Brainfuck code (Ctrl+C to exit):
+```
+
 ## Run Mode
 
 To execute a Brainfuck program, use the `run` command followed by the filename:
@@ -131,10 +154,10 @@ g++ interpreter.cpp -o interpreter
 
 ## Latest Version
 
-The latest version of the Brainfuck Interpreter is **v2.5.4**, which includes the following updates:
+The latest version of the Brainfuck Interpreter is **v2.7.4**, which includes the following updates:
 
-- Added More Performance Metrics to `benchmark` command.
-- Added `warning` command.
+- Added Brainfuck Shell
+- Added Version Banner
 
 ## Contribution
 
