@@ -76,6 +76,8 @@ To get warning for a Brainfuck Program, use `warning` command:
 
 ```bash
 ./interpreter bf warning <filename>.bf
+```
+
 ## Example
 
 Here is an example of how to use the Brainfuck Interpreter:
