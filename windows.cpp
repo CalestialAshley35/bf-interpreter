@@ -7,6 +7,7 @@
 #include <conio.h>
 #include <algorithm>
 #include <chrono>
+#include <cstdlib>
 #include <sstream>
 
 class BrainfuckInterpreter {
