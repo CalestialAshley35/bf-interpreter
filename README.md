@@ -1,6 +1,6 @@
-# Brainfuck Interpreter for Linux
+# Brainfuck Interpreter
 
-Welcome to the **Brainfuck Interpreter**! This interpreter allows you to run, debug, benchmark, and format Brainfuck programs on Linux. It comes with performance optimizations and code formatting features.
+Welcome to the **Brainfuck Interpreter**! This interpreter allows you to run, debug, benchmark, and format Brainfuck programs. It comes with performance optimizations and code formatting features.
 
 ## Features
 
