@@ -1,6 +1,6 @@
-# Brainfuck Interpreter
+# Brainfuck Interpreter 
 
-Welcome to the **Brainfuck Interpreter**! This interpreter allows you to run, debug, benchmark, and format Brainfuck programs. It comes with performance optimizations and code formatting features.
+Welcome to the **Brainfuck Interpreter**! This interpreter allows you to run, debug, benchmark, and format Brainfuck programs on Linux, It comes with performance optimizations and code formatting features.
 
 ## Features
 
@@ -28,30 +28,24 @@ wget https://github.com/CalestialAshley35/bf-interpreter/raw/main/interpreter.cp
 g++ interpreter.cpp -o interpreter
 ```
 
-### **Windows:**
-1. Download the Windows-Specific File from [Interpreter for Windows](https://github.com/CalestialAshley35/bf-interpreter/blob/main/windows.cpp).
-2. Run it using MinGW or Visual Studio C++.
-
 ## Version Banner
 
 You can use the Version Banner for seeing what version your using 
 To install the Brainfuck Interpreter with the version banner, follow these steps:
 
 ```bash
-wget https://github.com/CalestialAshley35/bf-interpreter/raw/main/bfint.deb
-apt install bfint.deb
+wget https://raw.githubusercontent.com/CalestialAshley35/bf-interpreter/refs/heads/main/bfint.sh
+bash bfint.dh
 ```
 
-When you run the `bfint` command, you'll see the following version banner:
+When you immediately run it, you'll see the following version banner:
 
 ```bash
 ~ $ bfint
-Brainfuck Interpreter 2.5.4 (March 2 2025) [Repository: https://github.com/CalestialAshley35/bf-interpreter] on Linux
+Brainfuck Interpreter 2.7.4 (March 2 2025) [Repository: https://github.com/CalestialAshley35/bf-interpreter] on Linux
 Type "help", "creator", "exit", "install" or "license" for more information.
 >>> 
 ```
-
-Certainly! Here’s a more polished and professional version of your text:
 
 ## Brainfuck Shell
 
