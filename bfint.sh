@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version="2.5.4"
+version="2.7.4"
 repo="https://github.com/CalestialAshley35/bf-interpreter"
 os_name=$(uname)
 
